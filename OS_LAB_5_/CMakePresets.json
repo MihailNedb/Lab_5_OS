@@ -1,0 +1,29 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_STANDARD": "17"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build",
+            "configurePreset": "debug",
+            "targets": ["all_and_tests"]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test",
+            "configurePreset": "debug",
+            "configuration": "Debug"
+        }
+    ]
+}
