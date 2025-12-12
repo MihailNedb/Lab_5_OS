@@ -68,6 +68,14 @@ void ServerApp::clientHandler(HANDLE hPipe) {
             }
         }
         else if (msg.type == WRITE_LOCK) {
+            if (lockedRecords[msg.id]) {
+         
+                resp.type = WRITE_LOCK;
+                resp.id = -1; 
+                WriteFile(hPipe, &resp, sizeof(Message), &bytesTransferred, nullptr);
+                continue; 
+            }
+
             Employee e;
             bool found = manager->readRecordByIdNoLock(msg.id, e);
             
@@ -79,6 +87,7 @@ void ServerApp::clientHandler(HANDLE hPipe) {
             }
             
             if (manager->lockRecord(msg.id, true)) {
+                lockedRecords[msg.id] = true; 
                 resp.type = WRITE_LOCK;
                 resp.id = msg.id;
                 resp.emp = e;
@@ -113,9 +122,11 @@ void ServerApp::clientHandler(HANDLE hPipe) {
             if (it != heldLocks.end()) {
                 manager->unlockRecord(msg.id, it->second);
                 heldLocks.erase(it);
+                lockedRecords[msg.id] = false; 
             } else {
                 manager->unlockRecord(msg.id, true);
                 manager->unlockRecord(msg.id, false);
+                lockedRecords[msg.id] = false; 
             }
             
             resp.type = UNLOCK;
@@ -134,13 +145,13 @@ void ServerApp::clientHandler(HANDLE hPipe) {
             WriteFile(hPipe, &resp, sizeof(Message), &bytesTransferred, nullptr);
         }
     }
-    
+
     for (auto& p : heldLocks) {
         try {
             manager->unlockRecord(p.first, p.second);
         } catch (...) {}
     }
-    
+
     FlushFileBuffers(hPipe);
     DisconnectNamedPipe(hPipe);
     CloseHandle(hPipe);

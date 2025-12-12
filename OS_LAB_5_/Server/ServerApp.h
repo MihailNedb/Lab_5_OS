@@ -3,6 +3,7 @@
 #include "../common/Employee.h"
 #include <windows.h>
 #include <atomic>
+#include <map>
 
 struct Message {
     int type;
@@ -21,13 +22,11 @@ enum MsgType {
 class ServerApp {
 public:
     ServerApp();
-    ~ServerApp() { delete manager; } // Добавляем деструктор для очистки
+    ~ServerApp() { delete manager; }
     void run();
 public:
     RecordManager* manager;
     void clientHandler(HANDLE hPipe);
-    
-    // Для обеспечения того, что только один поток вызывает initRecords (если бы это было динамически)
-    // В текущем коде не используется, но полезно для многопоточных структур
-    // std::atomic<bool> stopFlag{false}; 
+    std::map<int, bool> lockedRecords;
+  
 };

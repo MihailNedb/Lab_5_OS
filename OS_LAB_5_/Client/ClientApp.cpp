@@ -47,9 +47,14 @@ void ClientApp::run() {
 void ClientApp::modifyRecord() {
     int id;
     std::cout << "Enter ID for record modification: ";
-    std::cin >> id;
-    
-  
+
+    while (!(std::cin >> id)) {
+        std::cout << "Invalid input! Please enter a valid integer for ID.\n";
+        std::cin.clear();  
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+        std::cout << "Enter ID for record modification: ";
+    }
+
     std::cin.ignore(1000, '\n'); 
 
 
@@ -80,8 +85,13 @@ void ClientApp::modifyRecord() {
     std::getline(std::cin, newName);
 
     std::cout << "New hours: ";
-    std::cin >> newHours;
-    
+
+    while (!(std::cin >> newHours)) {
+        std::cout << "Invalid input! Please enter a valid number for hours.\n";
+        std::cin.clear();  
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
+        std::cout << "New hours: ";
+    }
 
     while (std::cin.get() != '\n' && !std::cin.eof()) {}
 
